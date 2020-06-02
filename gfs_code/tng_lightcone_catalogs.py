@@ -654,7 +654,8 @@ if __name__=="__main__":
 
     #currently uses local Illustris galaxy catalog data, but I would prefer to use API access calls (if not too slow) or JupyterLab
 
+    #let's start with TNG300-3 simulation for data volume reasons?
 
-    catalog_xyz = process_lightcone_catalog(lightcone="/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/tng300_6_5_xyz.txt",basedir="/astro/snyder_lab/MockSurveys/IllustrisTNG/TNG300-1/output/",mag_limit=magl)
+    catalog_xyz = process_lightcone_catalog(lightcone="/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/tng300_6_5_xyz.txt",basedir="/astro/snyder_lab/MockSurveys/IllustrisTNG/TNG300-3/output/",mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
-    catalog_xyz.output_catalog('/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/Lightcone_TNG300_mag30_6_5_xyz.txt')
+    catalog_xyz.output_catalog('/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/Lightcone_TNG300-3_mag30_6_5_xyz.txt')
