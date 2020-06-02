@@ -7,32 +7,20 @@ import matplotlib.pyplot as pyplot
 import matplotlib.colors as pycolors
 import matplotlib.cm as cm
 import numpy as np
-import asciitable
-import scipy.ndimage
-import scipy.stats as ss
-import scipy.signal
-import scipy as sp
-import scipy.odr as odr
 import glob
 import os
-import make_color_image
 import gzip
 import tarfile
 import shutil
-import congrid
 import astropy.io.ascii as ascii
-import warnings
-import subprocess
 import astropy
 import astropy.io.fits as fits
 import astropy.units as u
 from astropy.cosmology import WMAP7,z_at_value
 import copy
-import medianstats_bootstrap as msbs
-#import illustris_python as ilpy
 import translate_coordinates as tc #renato's code for camera projections
-#import gfs_sublink_utils as gsu
 import tng_api_utils as tau
+#import illustris_python as ilpy
 
 
 ilh = tau.tngh #0.704
@@ -69,12 +57,12 @@ class lightcone_catalog:
 ## Column 10:  v_Ingress along x [Physical kpc]
 ## Column 11:  v_Ingress along y [Physical kpc]
 ## Column 12:  v_Ingress along z [Physical kpc]
-## Column 13:  v_Camera along x [Physical kpc] 
-## Column 14:  v_Camera along y [Physical kpc] 
-## Column 15:  v_Camera along z [Physical kpc] 
-## Column 16:  v_Camera - v_Ingress along x [Physical kpc] 
-## Column 17:  v_Camera - v_Ingress along y [Physical kpc] 
-## Column 18:  v_Camera - v_Ingress along z [Physical kpc] 
+## Column 13:  v_Camera along x [Physical kpc]
+## Column 14:  v_Camera along y [Physical kpc]
+## Column 15:  v_Camera along z [Physical kpc]
+## Column 16:  v_Camera - v_Ingress along x [Physical kpc]
+## Column 17:  v_Camera - v_Ingress along y [Physical kpc]
+## Column 18:  v_Camera - v_Ingress along z [Physical kpc]
 ## Column 19:  Square Field of View (smaller axis) at v_Ingress [Physical kpc]
 ## Column 20:  Geometrically-appropriate redshift at center of box
 ## Column 21:  Radius buffered to subtend FOV [Comoving h^-1 kpc]
@@ -107,7 +95,7 @@ class lightcone_catalog:
         self.v_Offset_x_kpc = lc_data['col16'].data
         self.v_Offset_y_kpc = lc_data['col17'].data
         self.v_Offset_z_kpc = lc_data['col18'].data
-        
+
         self.fov_kpc = lc_data['col19'].data
         self.center_redshift = lc_data['col20'].data
         self.radius_buffer_cmh = lc_data['col21'].data
@@ -126,7 +114,7 @@ class lightcone_catalog:
                 ss = l.split("[")[-1].split("]")[0].split()
                 xs = ss[0]
                 ys = ss[1]
-                zs = ss[2]   
+                zs = ss[2]
 
             if "Direction Unit Vector" in l:
                 ss = l.split("[")[-1].split("]")[0].split()
@@ -194,7 +182,7 @@ class lightcone_catalog:
             cmd_total = cmd_end
 
             cz=self.center_redshift[i]
-                
+
 
             #world coordinates of ingress point
             cmx_begin = 1.0*cmx
@@ -223,11 +211,13 @@ class lightcone_catalog:
             #determine snapshot of interest
             print("Processing Cylinder: ", cyl, i, self.snapshot_redshift[i])
             snapnum = np.int32(self.snapshot_string[i][-3:])
-            if snapnum==53:
-                snapnum=52
-            if snapnum==55:
-                snapnum=54
-            
+
+            #old corrupt snaps for illustris-1
+            #if snapnum==53:
+            #    snapnum=52
+            #if snapnum==55:
+            #    snapnum=54
+
             print("    Snapshot Number: ", snapnum)
 
             #load subhalo catalogs for this snapshot
@@ -245,7 +235,7 @@ class lightcone_catalog:
             baryonmass_msun = mstar_msun + mgas_msun + mbh_msun #within 2x stellar half mass radius... best?
 
             mhalo_msun = subhalos['SubhaloMass']*(1.0e10)/ilh
-            
+
             sfr = subhalos['SubhaloSFR']*1.0
 
             gmag_ABabs=subhalos['SubhaloStellarPhotometrics'][:,4]*1.0
@@ -264,7 +254,7 @@ class lightcone_catalog:
                 mi = np.where(np.logical_and(gmag < self.mag_limit,baryonmass_msun > 0.0))[0]
 
 
-            
+
             if mi.shape[0]==0:
                 cylinder_obj = None
                 self.cylinder_object_list.append(cylinder_obj)
@@ -305,18 +295,18 @@ class lightcone_catalog:
             boxZ = (zpos/ilh) - self.v_Ingress_z_cmh[i]/ilh
 
             axi = f1.add_subplot(2,2,1)
-            axi.set_ylabel('boxI X',size=7,labelpad=1)    
+            axi.set_ylabel('boxI X',size=7,labelpad=1)
             axi.set_xlabel('boxI Z',size=7,labelpad=1)
             axi.tick_params(axis='both',which='major',labelsize=7)
             axi.plot(boxZ[::skip],boxX[::skip],'ok')
-            
+
             #add box coordinate to world coordinate of ingress point
             worldX = boxX+cmx_begin
             worldY = boxY+cmy_begin
             worldZ = boxZ+cmz_begin
 
             axi = f1.add_subplot(2,2,2)
-            axi.set_ylabel('world X',size=7,labelpad=1)    
+            axi.set_ylabel('world X',size=7,labelpad=1)
             axi.set_xlabel('world Z',size=7,labelpad=1)
             axi.tick_params(axis='both',which='major',labelsize=7)
             axi.plot(worldZ[::skip],worldX[::skip],'ok')
@@ -333,7 +323,7 @@ class lightcone_catalog:
             galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz = camera.cameraCoordinates_vector(velX,velY,velZ)
 
             axi = f1.add_subplot(2,2,3)
-            axi.set_ylabel('cam X',size=7,labelpad=1)    
+            axi.set_ylabel('cam X',size=7,labelpad=1)
             axi.set_xlabel('cam Z',size=7,labelpad=1)
             axi.tick_params(axis='both',which='major',labelsize=7)
             axi.plot(galaxy_camera_posz[::skip],galaxy_camera_posx[::skip],'ok')
@@ -347,7 +337,7 @@ class lightcone_catalog:
 
 
             axi = f1.add_subplot(2,2,4)
-            axi.set_ylabel('cam Y1',size=7,labelpad=1)    
+            axi.set_ylabel('cam Y1',size=7,labelpad=1)
             axi.set_xlabel('cam Y2',size=7,labelpad=1)
             axi.set_xlim(-3,3)
             axi.set_ylim(-3,3)
@@ -382,7 +372,7 @@ class lightcone_catalog:
                 cylinder_obj = None
 
             self.cylinder_object_list.append(cylinder_obj)
-            
+
             #f1.savefig(testf)
             pyplot.close(f1)
 
@@ -396,7 +386,7 @@ class lightcone_catalog:
         N = xpos.shape[0]
 
         sid = np.arange(N)
-            
+
         new_subhalos = copy.copy(subhalos)
 
         new_x = copy.copy(xpos)
@@ -585,13 +575,13 @@ class cylinder_catalog:
         self.mgas_msun = subhalos['SubhaloMassInRadType'][self.subhalo_index,0]*(1.0e10)/ilh #includes wind mass
         self.mbh_msun = subhalos['SubhaloMassInRadType'][self.subhalo_index,5]*(1.0e10)/ilh
         self.mhalo_msun = subhalos['SubhaloMass'][self.subhalo_index]*(1.0e10)/ilh
-        
+
         self.baryonmass_msun = self.mstar_msun + self.mgas_msun + self.mbh_msun #within 2x stellar half mass radius... best?
-        
+
         self.xpos_ckh = subhalos['SubhaloPos'][self.subhalo_index,0] #in cKpc/h of max bound part
         self.ypos_ckh = subhalos['SubhaloPos'][self.subhalo_index,1]
         self.zpos_ckh = subhalos['SubhaloPos'][self.subhalo_index,2]
-        
+
         self.xpos_pmpc = (self.xpos_ckh*1.0/(1.0 + snapz )/ilh)/1.0e3
         self.ypos_pmpc = (self.ypos_ckh*1.0/(1.0 + snapz )/ilh)/1.0e3
         self.zpos_pmpc = (self.zpos_ckh*1.0/(1.0 + snapz )/ilh)/1.0e3
@@ -611,7 +601,7 @@ class cylinder_catalog:
         self.gmag_apparent=gmag[ci]
 
         #self.total_redshift =
-        
+
         return
 
 
@@ -652,27 +642,19 @@ def process_lightcone_catalog(lightcone=None,basedir=None,mass_limit=10.0**9.5,s
 
 
 if __name__=="__main__":
-    
 
-    '''
-    magl=30.0
+
+    #start with conservative limits -- should be relatively few sources
+
+    magl=25.0
     minz=1.0
-    
+    maxz=1.5
+
+    #will need to modify inputs below, as well as codes above
+
+    #currently uses local Illustris galaxy catalog data, but I would prefer to use API access calls (if not too slow) or JupyterLab
+
+
     catalog_xyz = process_lightcone_catalog(lightcone="/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/tng300_6_5_xyz.txt",basedir="/astro/snyder_lab/MockSurveys/IllustrisTNG/TNG300-1/output/",mag_limit=magl)
-    catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=20)
+    catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
     catalog_xyz.output_catalog('/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/Lightcone_TNG300_mag30_6_5_xyz.txt')
-
-    
-    catalog_yxz = process_lightcone_catalog(lightcone="/astro/snyder_lab2/Illustris/Lightcones/CEERS/hudf_75Mpc_11_10_136snaps_fixedh_yxz_NEW.txt",basedir="/astro/snyder_lab2/Illustris/Illustris-1/",mag_limit=magl)
-    catalog_yxz = catalog_yxz.process_lightcone(minz=minz,maxz=20)
-    catalog_yxz.output_catalog('/astro/snyder_lab2/Illustris/Lightcones/CEERS/Illustris-1_RADEC_mag30_75Mpc_11_10_yxz.txt')
-
-    catalog_zyx = process_lightcone_catalog(lightcone="/astro/snyder_lab2/Illustris/Lightcones/CEERS/hudf_75Mpc_11_10_136snaps_fixedh_zyx_NEW.txt",basedir="/astro/snyder_lab2/Illustris/Illustris-1/",mag_limit=magl)
-    catalog_zyx = catalog_zyx.process_lightcone(minz=minz,maxz=20)
-    catalog_zyx.output_catalog('/astro/snyder_lab2/Illustris/Lightcones/CEERS/Illustris-1_RADEC_mag30_75Mpc_11_10_zyx.txt')
-    '''
-
-
-
-    
-    pass
