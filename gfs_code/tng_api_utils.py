@@ -27,7 +27,9 @@ illustris_defaultparams={'stars':'ParticleIDs,Coordinates,Velocities,GFM_Stellar
 
 
 baseUrl = 'http://www.tng-project.org/api/'
-headers = {"api-key":"117782db3bf216d7ce7a04d0c9034601"}
+
+#### REPLACE THIS API KEY WITH YOURS
+headers = {"api-key":"Replace With Teddy's API key"}
 
 
 def get(path, params=None,savepath=None, stream=False):
@@ -35,10 +37,10 @@ def get(path, params=None,savepath=None, stream=False):
     r = requests.get(path, params=params, headers=headers)
     # raise exception if response code is not HTTP SUCCESS (200)
     r.raise_for_status()
-    
+
     if r.headers['content-type'] == 'application/json':
         return r.json() # parse json responses automatically
-    
+
     if 'content-disposition' in r.headers and stream is False:
         file_basename = r.headers['content-disposition'].split("filename=")[1]
 
@@ -53,7 +55,7 @@ def get(path, params=None,savepath=None, stream=False):
     elif 'content-disposition' in r.headers and stream is True:
         file_basename = r.headers['content-disposition'].split("filename=")[1]
 
-        return r # return the object      
+        return r # return the object
 
     return r
 
@@ -75,11 +77,11 @@ def get_subhalo_mockdata_as_fits(sim='TNG100-1',
     #+'&axes='+axes
     url=baseUrl+'/'+sim+'/snapshots/'+str(snap)+'/subhalos/'+str(sfid)+\
              '/vis.hdf5?partType='+partType+'&partField='+partField+'&size='+str(size)+'&sizeType=arcmin&nPixels='+str(nPixels)+'&method=sphMap_subhalo'+'&axes='+axes
-      
 
-    
+
+
     r=get(url,stream=True)
-    
+
     output=io.BytesIO()
     try:
         output.write(r.content)
@@ -88,7 +90,7 @@ def get_subhalo_mockdata_as_fits(sim='TNG100-1',
         print(r)
         print(url)
         raise
-        
+
     data=ho['grid'][()] #dataset should be nPixels x nPixels
 
     pixsize_arcsec = 60.0*(size/nPixels)
@@ -129,13 +131,13 @@ def get_subhalo_mockdata_as_fits(sim='TNG100-1',
                 out_data=10.0**data #de-log
         else:
             return None
-            
-        
+
+
     if existingheader is not None:
         fits_hdu = fits.ImageHDU(out_data,header=existingheader)
     else:
         fits_hdu = fits.ImageHDU(out_data)
-    
+
     fits_hdu.header['EXTNAME']='MockData'
     fits_hdu.header['SIM']=sim
     fits_hdu.header['SNAP']=snap
@@ -149,8 +151,6 @@ def get_subhalo_mockdata_as_fits(sim='TNG100-1',
     fits_hdu.header['pixscale']=(pixsize_arcsec,'arcsec')
     fits_hdu.header['origunit']=(in_units,'downloaded units')
     fits_hdu.header['BUNIT']=(out_units,'final units')
-    
-    
+
+
     return fits_hdu
-
-
