@@ -221,6 +221,13 @@ class lightcone_catalog:
             print("    Snapshot Number: ", snapnum)
 
             #load subhalo catalogs for this snapshot
+
+            #this code currently uses a local copy of the group catalogs, but this is clunky and inflexible
+            #Instead, I'm hoping we can re-work this section to make API calls instead
+            #The idea would be to replace the "ilpy.groupcat.loadSubhalos()" call below with API calls
+            #We'll have to then test to make sure this doesn't take too long when using the web.
+
+
             fields=['SubhaloMass','SubhaloMassInMaxRad','SubhaloMassInRadType','SubhaloMassInMaxRadType','SubhaloPos','SubhaloSFR','SubhaloSFRinRad','SubhaloVel','SubhaloBHMass','SubhaloBHMdot','SubhaloStellarPhotometrics','SubhaloWindMass']
             subhalos = ilpy.groupcat.loadSubhalos(self.basedir,snapnum,fields=fields)
             print("    Loaded subhalos: ", subhalos['count'], subhalos['SubhaloMassInRadType'].shape)
@@ -655,6 +662,7 @@ if __name__=="__main__":
     #currently uses local Illustris galaxy catalog data, but I would prefer to use API access calls (if not too slow) or JupyterLab
 
     #let's start with TNG300-3 simulation for data volume reasons?
+    #will also want to change the parameter to first function below from "basedir" to "simname" maybe?
 
     catalog_xyz = process_lightcone_catalog(lightcone="/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/tng300_6_5_xyz.txt",basedir="/astro/snyder_lab/MockSurveys/IllustrisTNG/TNG300-3/output/",mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
