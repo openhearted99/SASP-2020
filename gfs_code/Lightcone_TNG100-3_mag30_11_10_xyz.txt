@@ -1,0 +1,48 @@
+## Lightcone Catalog File for input geometry: ./tng100_11_10_xyz.txt
+## Catalog simulation name: TNG100-3
+## Square FOV (arcmin):     2.841110
+## Area (arcmin^2):     8.071906
+## Baryonic Mass Lower Limit (Msun) : 3.16228e+09
+## Assumed Cosmology: FlatLambdaCDM(name="WMAP7", H0=70.4 km / (Mpc s), Om0=0.272, Tcmb0=2.725 K, Neff=3.04, m_nu=[0. 0. 0.] eV, Ob0=0.0455)
+## Creator:  Teddy Pena (STScI) 
+## Catalog & Data Release Reference:  Nelson et al. (2019) 
+## Catalog & Data Release URL: tng-project.org/data 
+## Column 01: Snapshot number 
+## Column 02: Subhalo Index 
+## Column 03: RA (degrees) 
+## Column 04: DEC (degrees) 
+## Column 05: RA (proper kpc at true z) 
+## Column 06: DEC (proper kpc at true z) 
+## Column 07: RA (proper kpc at inferred z) 
+## Column 08: DEC (proper kpc at inferred z) 
+## Column 09: True cosmological redshift 
+## Column 10: Inferred redshift (includes peculiar v) 
+## Column 11: Peculiar redshift; Peculiar Velocity / Speed of Light 
+## Column 12: True scale at cosmological z, in kpc/arcsec 
+## Column 13: [Mpc] Comoving X in Observer Coordinates 
+## Column 14: [Mpc] Comoving Y in Observer Coordinates 
+## Column 15: [Mpc] Comoving Z in Observer Coordinates 
+## Column 16: [Mpc] True Angular Diameter Distance to observer 
+## Column 17: [Mpc] Inferred Angular Diameter Distance to observer 
+## Column 18: Snapshot redshift 
+## Column 19: Geometrically appropriate redshift at center of this cylinder 
+## Column 20: Lightcone cylinder number 
+## Column 21: [Msun] Stellar mass within 2X stellar half mass radius
+## Column 22: [Msun] Total gas mass within 2X stellar half mass radius
+## Column 23: [Msun] Total mass of this subhalo (excludes children subhalos) 
+## Column 24: [Msun] Total BH mass within 2X stellar half mass radius
+## Column 25: [Msun] Total baryon mass within 2X stellar half mass radius
+## Column 26: [Msun/year] SFR within 2X stellar half mass radius
+## Column 27: [(10^10 Msun/h) / (0.978 Gyr/h)] Total BH accretion rate within subhalo
+## Column 28: [Mpc] Camera X in Observer Coordinates (Proper X at z; a transverse coordinate) 
+## Column 29: [Mpc] Camera Y in Observer Coordinates (Proper Y at z; a transverse coordinate)
+## Column 30: [Mpc] Camera Z in Observer Coordinates (Proper Z at z; should be almost exactly Column 16)
+## Column 31: [AB Mag] Intrinsic stellar g absolute magnitude (BC03) 
+## Column 32: [AB Mag] Intrinsic stellar r absolute magnitude (BC03) 
+## Column 33: [AB Mag] Intrinsic stellar i absolute magnitude (BC03) 
+## Column 34: [AB Mag] Intrinsic stellar z absolute magnitude (BC03) 
+## Column 35: [km/s] Galaxy motion in transverse Camera X direction 
+## Column 36: [km/s] Galaxy motion in transverse Camera Y direction 
+## Column 37: [km/s] Galaxy motion in line-of-sight Camera Z direction ; the Peculiar Velocity 
+## Column 38: [km/s] Cosmological expansion velocity at true z (Column 10 measures Column 37+38)
+## Column 39: [AB Mag] Apparent total rest-frame g-band magnitude (BC03) 

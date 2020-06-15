@@ -66,7 +66,7 @@ class lightcone_catalog:
 ## Column 19:  Square Field of View (smaller axis) at v_Ingress [Physical kpc]
 ## Column 20:  Geometrically-appropriate redshift at center of box
 ## Column 21:  Radius buffered to subtend FOV [Comoving h^-1 kpc]
-    def __init__(self,lightconefile,basedir,mass_limit=(10.0**9.5),sfr_limit=0.0,mag_limit=None):
+    def __init__(self,lightconefile,sim_name,mass_limit=(10.0**9.5),sfr_limit=0.0,mag_limit=None):
         lc_data = ascii.read(lightconefile)
         print("Initializing Lightcone File: ", lightconefile)
         print(lc_data)
@@ -152,7 +152,7 @@ class lightcone_catalog:
 
         self.cylinder_object_list = []
 
-        self.basedir = basedir
+        self.sim_name = sim_name
 
         self.mass_limit = mass_limit
         self.sfr_limit = sfr_limit
@@ -210,7 +210,7 @@ class lightcone_catalog:
 
             #determine snapshot of interest
             print("Processing Cylinder: ", cyl, i, self.snapshot_redshift[i])
-            snapnum = np.int32(self.snapshot_string[i][-3:])
+            snapnum = self.snapshot_string[i]
 
             #old corrupt snaps for illustris-1
             #if snapnum==53:
@@ -229,7 +229,7 @@ class lightcone_catalog:
 
 
             fields=['SubhaloMass','SubhaloMassInMaxRad','SubhaloMassInRadType','SubhaloMassInMaxRadType','SubhaloPos','SubhaloSFR','SubhaloSFRinRad','SubhaloVel','SubhaloBHMass','SubhaloBHMdot','SubhaloStellarPhotometrics','SubhaloWindMass']
-            subhalos = ilpy.groupcat.loadSubhalos(self.basedir,snapnum,fields=fields)
+            subhalos = ilpy.groupcat.loadSubhalos(self.sim_name,snapnum,fields=fields)
             print("    Loaded subhalos: ", subhalos['count'], subhalos['SubhaloMassInRadType'].shape)
 
 
@@ -461,14 +461,14 @@ class lightcone_catalog:
         fobj = open(outfile,'w')
 
         fobj.write('## Lightcone Catalog File for input geometry: '+self.lightconefile+'\n')
-        fobj.write('## Catalog source Directory: '+self.basedir+'\n')
+        fobj.write('## Catalog simulation name: '+self.sim_name+'\n')
         fobj.write('## Square FOV (arcmin): {:12.6f}'.format(self.delb_arcmin)+'\n')
         fobj.write('## Area (arcmin^2): {:12.6f}'.format(self.delb_arcmin**2)+'\n')
         fobj.write('## Baryonic Mass Lower Limit (Msun) : {:10.5e}'.format(self.mass_limit)+'\n')
         fobj.write('## Assumed Cosmology: '+WMAP7.__str__()+'\n')
-        fobj.write('## Creator:  Greg Snyder (STScI) \n')
-        fobj.write('## Catalog & Data Release Reference:  Nelson et al. (2015) \n')
-        fobj.write('## Catalog & Data Release URL: illustris-project.org/data \n')
+        fobj.write('## Creator:  Teddy Pena (STScI) \n')
+        fobj.write('## Catalog & Data Release Reference:  Nelson et al. (2019) \n')
+        fobj.write('## Catalog & Data Release URL: tng-project.org/data \n')
         fobj.write('## Column 01: Snapshot number \n')
         fobj.write('## Column 02: Subhalo Index \n')
         fobj.write('## Column 03: RA (degrees) \n')
@@ -634,11 +634,10 @@ class cylinder_catalog:
         return
 
 
-def process_lightcone_catalog(lightcone=None,basedir=None,mass_limit=10.0**9.5,sfr_limit=0.0,mag_limit=None):
-    assert (lightcone is not None) and (basedir is not None)
-    assert os.path.lexists(basedir)
+def process_lightcone_catalog(lightcone=None,sim_name=None,mass_limit=10.0**9.5,sfr_limit=0.0,mag_limit=None):
+    assert (lightcone is not None) and (sim_name is not None)
 
-    catalog_object = lightcone_catalog(lightcone,basedir,mass_limit=mass_limit,sfr_limit=sfr_limit,mag_limit=mag_limit)
+    catalog_object = lightcone_catalog(lightcone,sim_name,mass_limit=mass_limit,sfr_limit=sfr_limit,mag_limit=mag_limit)
 
 
 
@@ -662,8 +661,8 @@ if __name__=="__main__":
     #currently uses local Illustris galaxy catalog data, but I would prefer to use API access calls (if not too slow) or JupyterLab
 
     #let's start with TNG300-3 simulation for data volume reasons?
-    #will also want to change the parameter to first function below from "basedir" to "simname" maybe?
+    #will also want to change the parameter to first function below from "basedir" to "simname" maybe? Check!
 
-    catalog_xyz = process_lightcone_catalog(lightcone="/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/tng300_6_5_xyz.txt",basedir="/astro/snyder_lab/MockSurveys/IllustrisTNG/TNG300-3/output/",mag_limit=magl)
+    catalog_xyz = process_lightcone_catalog(lightcone="./tng100_11_10_xyz.txt",sim_name='TNG100-3',mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
-    catalog_xyz.output_catalog('/Users/gsnyder/Dropbox/Projects/PythonCode/mock-ceers/base_hydro/Lightcone_TNG300-3_mag30_6_5_xyz.txt')
+    catalog_xyz.output_catalog('./Lightcone_TNG100-3_mag30_11_10_xyz.txt')
