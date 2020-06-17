@@ -20,7 +20,7 @@ from astropy.cosmology import WMAP7,z_at_value
 import copy
 import translate_coordinates as tc #renato's code for camera projections
 import tng_api_utils as tau
-#import illustris_python as ilpy
+import illustris_python as ilpy
 
 
 ilh = tau.tngh #0.704
