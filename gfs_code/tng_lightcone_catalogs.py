@@ -664,6 +664,6 @@ if __name__=="__main__":
     #let's start with TNG300-3 simulation for data volume reasons?
     #will also want to change the parameter to first function below from "basedir" to "simname" maybe? Check!
 
-    catalog_xyz = process_lightcone_catalog(lightcone="./tng100_11_10_xyz.txt",base_dir='~/TNG100-3/output',mag_limit=magl)
+    catalog_xyz = process_lightcone_catalog(lightcone="./tng100_11_10_xyz.txt",base_dir='~/sims.TNG/TNG100-3/output',mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
     catalog_xyz.output_catalog('./Lightcone_TNG100-3_mag30_11_10_xyz.txt')
