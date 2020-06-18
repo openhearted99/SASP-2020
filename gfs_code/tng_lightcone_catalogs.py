@@ -653,9 +653,9 @@ if __name__=="__main__":
 
     #start with conservative limits -- should be relatively few sources
 
-    magl=25.0
-    minz=1.0
-    maxz=1.5
+    magl=30
+    minz=0.1
+    maxz=8.8
 
     #will need to modify inputs below, as well as codes above
 
@@ -664,6 +664,6 @@ if __name__=="__main__":
     #let's start with TNG300-3 simulation for data volume reasons?
     #will also want to change the parameter to first function below from "basedir" to "simname" maybe? Check!
 
-    catalog_xyz = process_lightcone_catalog(lightcone="./tng100_11_10_xyz.txt",base_dir='/home/tnguser/sims.TNG/TNG100-3/output/',mag_limit=magl)
+    catalog_xyz = process_lightcone_catalog(lightcone="./tng300_6_5_xyz.txt",base_dir='/home/tnguser/sims.TNG/TNG300-2/output/',mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
-    catalog_xyz.output_catalog('./Lightcone_TNG100-3_mag30_11_10_xyz.txt')
+    catalog_xyz.output_catalog('./Lightcone_TNG300-2_mag30_6_5_xyz.txt')
