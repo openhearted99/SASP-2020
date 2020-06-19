@@ -232,9 +232,10 @@ class lightcone_catalog:
             subhalos = ilpy.groupcat.loadSubhalos(self.base_dir,snapnum,fields=fields)
             print("    Loaded subhalos: ", subhalos['count'], subhalos['SubhaloMassInRadType'].shape)
 
-
+           
             subhalos = self.periodicize(subhalos,self.L_comovingh*1000.0)
-
+            
+            
             mstar_msun = subhalos['SubhaloMassInRadType'][:,4]*(1.0e10)/ilh
             mgas_msun = subhalos['SubhaloMassInRadType'][:,0]*(1.0e10)/ilh #includes wind mass
             mbh_msun = subhalos['SubhaloMassInRadType'][:,5]*(1.0e10)/ilh
@@ -259,7 +260,7 @@ class lightcone_catalog:
                 mi = np.where(np.logical_and(baryonmass_msun > self.mass_limit, sfr >self.sfr_limit))[0]
             else:
                 mi = np.where(np.logical_and(gmag < self.mag_limit,baryonmass_msun > 0.0))[0]
-
+            exit()
 
 
             if mi.shape[0]==0:
@@ -400,7 +401,6 @@ class lightcone_catalog:
         new_y = copy.copy(ypos)
         new_z = copy.copy(zpos)
 
-        print("Periodicizing...")
 
         new_subhalos['SubFindID'] = np.concatenate((sid,sid))
         new_subhalos['SubFindID'] = np.concatenate((new_subhalos['SubFindID'],sid))
@@ -409,9 +409,10 @@ class lightcone_catalog:
         new_subhalos['SubFindID'] = np.concatenate((new_subhalos['SubFindID'],sid))
         new_subhalos['SubFindID'] = np.concatenate((new_subhalos['SubFindID'],sid))
 
-
+        
         keys = subhalos.keys()
         for key in keys:
+            print(key)
             if key=='SubhaloPos':
                 #special
                 #x repeat
@@ -662,8 +663,7 @@ if __name__=="__main__":
     #currently uses local Illustris galaxy catalog data, but I would prefer to use API access calls (if not too slow) or JupyterLab
 
     #let's start with TNG300-3 simulation for data volume reasons?
-    #will also want to change the parameter to first function below from "basedir" to "simname" maybe? Check!
 
-    catalog_xyz = process_lightcone_catalog(lightcone="./tng300_6_5_xyz.txt",base_dir='/home/tnguser/sims.TNG/TNG300-2/output/',mag_limit=magl)
+    catalog_xyz = process_lightcone_catalog(lightcone="./tng300_6_5_xyz.txt",base_dir='/home/tnguser/sims.TNG/TNG300-1/output/',mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
-    catalog_xyz.output_catalog('./Lightcone_TNG300-2_mag30_6_5_xyz.txt')
+    catalog_xyz.output_catalog('./Lightcone_TNG300-1_mag30_6_5_xyz.txt')
