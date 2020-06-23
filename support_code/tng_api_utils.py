@@ -1,16 +1,10 @@
 import os
-import sys
 import numpy as np
-import glob
-import shutil
-import tarfile
-import string
 import astropy
 import astropy.cosmology
 import astropy.io.fits as fits
 import astropy.io.ascii as ascii
 import astropy.table
-import re
 import requests
 import io
 import h5py

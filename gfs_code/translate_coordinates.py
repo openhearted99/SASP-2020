@@ -1,7 +1,7 @@
 # ======================================================================================================================
 #       Libraries and Modules
-#from astropy.io import ascii
-#from astropy.io import fits
+from astropy.io import ascii
+from astropy.io import fits
 
 import numpy as np
 import argparse

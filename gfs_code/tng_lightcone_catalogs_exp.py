@@ -223,15 +223,15 @@ class lightcone_catalog:
             #Instead, I'm hoping we can re-work this section to make API calls instead
             #The idea would be to replace the "ilpy.groupcat.loadSubhalos()" call below with API calls
             #We'll have to then test to make sure this doesn't take too long when using the web.
-
-            fields=['SubhaloMass','SubhaloMassInMaxRad','SubhaloMassInRadType','SubhaloMassInMaxRadType','SubhaloPos','SubhaloSFR','SubhaloSFRinRad','SubhaloVel','SubhaloBHMass','SubhaloBHMdot','SubhaloStellarPhotometrics','SubhaloWindMass']
+            # =====================================
+            # Cut fields: 'SubhaloWindMass', 'SubhaloBHMass', 'SubhaloBHMdot'
+            fields=['SubhaloMass','SubhaloMassInMaxRad','SubhaloMassInRadType','SubhaloMassInMaxRadType','SubhaloPos','SubhaloSFR','SubhaloSFRinRad','SubhaloVel','SubhaloStellarPhotometrics']
             subhalos = ilpy.groupcat.loadSubhalos(self.base_dir,snapnum,fields=fields)
             print("    Loaded subhalos: ", subhalos['count'], subhalos['SubhaloMassInRadType'].shape)
 
             # ***************************************************************************************************************************
             # Currently working area. Delete after done!
             # Cleaning...
-            
             mstar_msun = subhalos['SubhaloMassInRadType'][:,4]*(1.0e10)/ilh
             mgas_msun = subhalos['SubhaloMassInRadType'][:,0]*(1.0e10)/ilh #includes wind mass
             mbh_msun = subhalos['SubhaloMassInRadType'][:,5]*(1.0e10)/ilh
@@ -246,42 +246,6 @@ class lightcone_catalog:
             distmod=illcos.distmod(cz).value
             gmag=gmag_ABabs+distmod
             
-            if self.mag_limit is None:
-                mi = np.where(np.logical_and(baryonmass_msun > self.mass_limit, sfr >self.sfr_limit))[0]
-            else:
-                mi = np.where(np.logical_and(gmag < self.mag_limit,baryonmass_msun > 0.0))[0]
-
-
-            if mi.shape[0]==0:
-                cylinder_obj = None
-                self.cylinder_object_list.append(cylinder_obj)
-                continue
-                f1.close()
-            # ***************************************************************************************************************************
-            subhalos = self.periodicize(subhalos,self.L_comovingh*1000.0)
-            
-            # code above moved from here:
-            # ===========================================================================================================================
-            mstar_msun = subhalos['SubhaloMassInRadType'][:,4]*(1.0e10)/ilh
-            mgas_msun = subhalos['SubhaloMassInRadType'][:,0]*(1.0e10)/ilh #includes wind mass
-            mbh_msun = subhalos['SubhaloMassInRadType'][:,5]*(1.0e10)/ilh
-
-            baryonmass_msun = mstar_msun + mgas_msun + mbh_msun #within 2x stellar half mass radius... best?
-
-            mhalo_msun = subhalos['SubhaloMass']*(1.0e10)/ilh
-
-            sfr = subhalos['SubhaloSFR']*1.0
-
-            gmag_ABabs=subhalos['SubhaloStellarPhotometrics'][:,4]*1.0
-            distmod=illcos.distmod(cz).value
-            gmag=gmag_ABabs+distmod
-
-
-
-
-            #cull liberally by mass... how?
-            #here, either massive OR star-forming!  probably must refine this.. how big?
-
             if self.mag_limit is None:
                 mi = np.where(np.logical_and(baryonmass_msun > self.mass_limit, sfr >self.sfr_limit))[0]
             else:
@@ -298,13 +262,64 @@ class lightcone_catalog:
             print("    Mstar statistics: ", np.min(mstar_msun[mi]), np.max(mstar_msun[mi]), np.median(mstar_msun[mi]))
             print("    Mgas  statistics: ", np.min(mgas_msun[mi]), np.max(mgas_msun[mi]), np.median(mgas_msun[mi]))
             print("    Mag  statistics : ", np.min(gmag[mi]), np.max(gmag[mi]), np.median(gmag[mi]))
+            print
+            
+            # NEW CODE
+            for key in subhalos.keys():
+                if key == 'count':
+                    continue
+                
+                filtered_data = subhalos[key][mi]
+                
+                subhalos[key] = filtered_data
+            
+            # ***************************************************************************************************************************
+            subhalos = self.periodicize(subhalos,self.L_comovingh*1000.0)
+            # code above moved from here:
+            # ===========================================================================================================================
+            #mstar_msun = subhalos['SubhaloMassInRadType'][:,4]*(1.0e10)/ilh
+            #mgas_msun = subhalos['SubhaloMassInRadType'][:,0]*(1.0e10)/ilh #includes wind mass
+            #mbh_msun = subhalos['SubhaloMassInRadType'][:,5]*(1.0e10)/ilh
 
+            #baryonmass_msun = mstar_msun + mgas_msun + mbh_msun #within 2x stellar half mass radius... best?
+
+            #mhalo_msun = subhalos['SubhaloMass']*(1.0e10)/ilh
+
+            #sfr = subhalos['SubhaloSFR']*1.0
+
+            #gmag_ABabs=subhalos['SubhaloStellarPhotometrics'][:,4]*1.0
+            #distmod=illcos.distmod(cz).value
+            #gmag=gmag_ABabs+distmod
+
+
+
+
+            #cull liberally by mass... how?
+            #here, either massive OR star-forming!  probably must refine this.. how big?
+
+            #if self.mag_limit is None:
+            #    mi = np.where(np.logical_and(baryonmass_msun > self.mass_limit, sfr >self.sfr_limit))[0]
+            #else:
+            #    mi = np.where(np.logical_and(gmag < self.mag_limit,baryonmass_msun > 0.0))[0]
+
+
+            #if mi.shape[0]==0:
+            #    cylinder_obj = None
+            #    self.cylinder_object_list.append(cylinder_obj)
+            #    continue
+            #    f1.close()
+
+            #print("    Selected number: ", mi.shape)
+            #print("    Mstar statistics: ", np.min(mstar_msun[mi]), np.max(mstar_msun[mi]), np.median(mstar_msun[mi]))
+            #print("    Mgas  statistics: ", np.min(mgas_msun[mi]), np.max(mgas_msun[mi]), np.median(mgas_msun[mi]))
+            #print("    Mag  statistics : ", np.min(gmag[mi]), np.max(gmag[mi]), np.median(gmag[mi]))
+            # ===========================================================================================================================
 
 
             #mi is index into subhalo catalog -- the critical index numbers we need to save!!!
-            xpos = subhalos['SubhaloPos'][mi,0] #in cKpc/h of max bound part
-            ypos = subhalos['SubhaloPos'][mi,1]
-            zpos = subhalos['SubhaloPos'][mi,2]
+            xpos = subhalos['SubhaloPos'][:,0] #in cKpc/h of max bound part
+            ypos = subhalos['SubhaloPos'][:,1]
+            zpos = subhalos['SubhaloPos'][:,2]
 
 
             #project geometry
@@ -347,9 +362,9 @@ class lightcone_catalog:
 
 
 
-            velX = subhalos['SubhaloVel'][mi,0]
-            velY = subhalos['SubhaloVel'][mi,1]
-            velZ = subhalos['SubhaloVel'][mi,2]
+            velX = subhalos['SubhaloVel'][:,0]
+            velY = subhalos['SubhaloVel'][:,1]
+            velZ = subhalos['SubhaloVel'][:,2]
 
             #galaxy cam position, in comoving kpc
             galaxy_camera_posx,galaxy_camera_posy,galaxy_camera_posz = camera.cameraCoordinates_vector(worldX,worldY,worldZ)
@@ -398,9 +413,9 @@ class lightcone_catalog:
                 print(cyl, cmd_begin, np.min(galaxy_camera_posz[ci]))
                 print(cyl, cmd_end, np.max(galaxy_camera_posz[ci]))
 
-                cylinder_obj = cylinder_catalog(snapnum,subhalos,mi,ci,RA_deg,DEC_deg, self.snapshot_redshift[i],
+                cylinder_obj = cylinder_catalog(snapnum,subhalos,ci,RA_deg,DEC_deg, self.snapshot_redshift[i],
                                                 galaxy_camera_posx,galaxy_camera_posy,galaxy_camera_posz,self.center_redshift[i],
-                                                galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag[mi])
+                                                galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag)
             else:
                 cylinder_obj = None
 
@@ -543,13 +558,13 @@ class lightcone_catalog:
 
 
 class cylinder_catalog:
-    def __init__(self,snapnum,subhalos,mi,ci,RA_deg,DEC_deg,snapz,galaxy_camera_posx,galaxy_camera_posy,galaxy_camera_posz,centerz,galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag):
+    def __init__(self,snapnum,subhalos,ci,RA_deg,DEC_deg,snapz,galaxy_camera_posx,galaxy_camera_posy,galaxy_camera_posz,centerz,galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag):
 
         #fields=['SubhaloMass','SubhaloMassInMaxRad','SubhaloMassInRadType','SubhaloMassInMaxRadType','SubhaloPos','SubhaloSFR','SubhaloSFRinRad','SubhaloVel','SubhaloBHMass','SubhaloBHMdot','SubhaloStellarPhotometrics','SubhaloWindMass']
 
         self.snapshot_number = snapnum + np.zeros_like(ci)
 
-        self.subhalo_index = subhalos['SubFindID'][mi[ci]]
+        self.subhalo_index = subhalos['SubFindID']
 
         self.RA_deg = RA_deg
         self.DEC_deg = DEC_deg
@@ -623,7 +638,7 @@ class cylinder_catalog:
         self.zvel_kms = subhalos['SubhaloVel'][self.subhalo_index,2]
 
         self.sfr = subhalos['SubhaloSFRinRad'][self.subhalo_index]
-        self.bhmdot = subhalos['SubhaloBHMdot'][self.subhalo_index]
+        #self.bhmdot = subhalos['SubhaloBHMdot'][self.subhalo_index]
 
         self.gmag = subhalos['SubhaloStellarPhotometrics'][self.subhalo_index,4]
         self.rmag = subhalos['SubhaloStellarPhotometrics'][self.subhalo_index,5]
