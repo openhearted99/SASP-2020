@@ -23,7 +23,7 @@ baseUrl = 'http://www.tng-project.org/api/'
 
 #### REPLACE THIS API KEY WITH YOURS
 # Following is specific to my API key location
-apikey = str(np.loadtxt('../Bureaucracy/api-key', dtype=str))
+apikey = str(np.loadtxt('../../Bureaucracy/api-key', dtype=str))
 headers = {"api-key":apikey}
 
 
