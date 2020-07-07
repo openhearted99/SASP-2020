@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# SASP 2020 specific things
+Misc/
+Bureaucracy/
+Illustris_tutorials/
+Project_explinations/
