@@ -9,9 +9,12 @@ import array
 import scipy.stats as ss
 import scipy as sp
 #import astropy.io.fits as pyfits
-import cosmocalc as cc
+#import cosmocalc as cc
 import datetime
-import asciitable
+#import asciitable
+import astropy.io.ascii as ascii
+import astropy
+import astropy.cosmology
 
 
 ####
@@ -34,13 +37,18 @@ import asciitable
 
 
 class Cosmology:
-    def __init__(self, H0=70.0, WM=0.27,WV=0.73):
+    def __init__(self, H0=70.0, WM=0.27,WV=0.73,WB=0.0456):
         self.H0=H0
         self.WM=WM
         self.WV=WV
+        self.WB=WB
+        self.thisc = astropy.cosmology.FlatLambdaCDM(H0=self.H0,Om0=self.WM,Ob0=self.WB)
+
         self.redshift_grid = np.logspace(-3,2,100)
-        self.comoving_mpc_grid = np.asarray([(cc.cosmocalc(zf,H0=self.H0,WM=self.WM,WV=self.WV))['DCMR_Mpc'] for zf in self.redshift_grid])
-        self.DA_mpc_grid = np.asarray([(cc.cosmocalc(zf,H0=self.H0,WM=self.WM,WV=self.WV))['DA_Mpc'] for zf in self.redshift_grid])
+        self.comoving_mpc_grid=self.thisc.comoving_distance(self.redshift_grid).value
+        self.DA_mpc_grid=self.thisc.angular_diameter_distance(self.redshift_grid).value
+        #self.comoving_mpc_grid = np.asarray([(cc.cosmocalc(zf,H0=self.H0,WM=self.WM,WV=self.WV))['DCMR_Mpc'] for zf in self.redshift_grid])
+        #self.DA_mpc_grid = np.asarray([(cc.cosmocalc(zf,H0=self.H0,WM=self.WM,WV=self.WV))['DA_Mpc'] for zf in self.redshift_grid])
 
 class ReplicatedBox:
     def __init__(self, v_lab, v_ingress):
@@ -84,10 +92,10 @@ class LightCone:
         if manual_fov_arcmin==0.0:
             self.square_fov_rad = self.delta_b_rad
 
-        self.v1 = np.asarray((self.x_com)[0],(self.y_com[0]),(self.z_com)[0])
-        self.v2 = np.asarray((self.x_com)[1],(self.y_com[0]),(self.z_com)[0])
-        self.v3 = np.asarray((self.x_com)[1],(self.y_com[1]),(self.z_com)[0])
-        self.v4 = np.asarray((self.x_com)[0],(self.y_com[1]),(self.z_com)[0])
+        self.v1 = np.asarray([(self.x_com)[0],(self.y_com[0]),(self.z_com)[0]])
+        self.v2 = np.asarray([(self.x_com)[1],(self.y_com[0]),(self.z_com)[0]])
+        self.v3 = np.asarray([(self.x_com)[1],(self.y_com[1]),(self.z_com)[0]])
+        self.v4 = np.asarray([(self.x_com)[0],(self.y_com[1]),(self.z_com)[0]])
 
 
         self.xaxis = np.asarray([1.0,0.0,0.0])
@@ -347,21 +355,23 @@ if __name__=="__main__":
     #data = asciitable.read('gfm_snaps.txt')
     #data = asciitable.read('snap_v_redshift.txt')
 
-    data = asciitable.read('tng_snaps_v_redshift.txt')
+    data = ascii.read('tng_snaps_v_redshift.txt')
+    zlist=data['col2'].data
+    namelist=np.asarray(data['col1'].data,dtype=str)
 
-    zlist = np.array(map(float,(data['col2'])))
+    #zlist = np.array(map(float,(data['col2'])))
 
     #zlist = np.array(map(float,(data['col2'])[:315]))
     #namelist = ((data['col1'])[:315])
     #namelist = np.asarray([(s)[85:89] for s in namelist])
 
-    namelist = ((data['col1']))
-    namelist = np.asarray([(str(s)) for s in namelist])
+    #namelist = ((data['col1']))
+    #namelist = np.asarray([(str(s)) for s in namelist])
 
     #namelist = np.asarray([(s)[84:88] for s in namelist])
 
     #print namelist#, zlist
-    cosmology = Cosmology(H0=67.74,WM=0.3089,WV=1.0-0.3089)
+    cosmology = Cosmology(H0=67.74,WM=0.3089,WV=1.0-0.3089,WB=0.0486)
     #hudf_default = LightCone(75.0/h,cosmology,"Default Deep")
     #hudf_default.BasicCone(11.0, 9.0, namelist, zlist)
     #hudf_shallow = LightCone(75.0/h,cosmology,"Default Shallow")
@@ -373,10 +383,10 @@ if __name__=="__main__":
 
 
     hudf_bigbox_wide = LightCone(75.0/h,cosmology,"Deep 75 Mpc")
-    hudf_bigbox_wide.BasicCone(11.0, 10.0, namelist, zlist, manual_dist_limit=10000.0)  #z~8
-    hudf_bigbox_wide.export_runparams('tng100_11_10_xyz.txt')
-    hudf_bigbox_wide.export_runparams('tng100_11_10_yxz.txt', swapxy=True)
-    hudf_bigbox_wide.export_runparams('tng100_11_10_zyx.txt', swapxz=True)
+    hudf_bigbox_wide.BasicCone(7.0, 6.0, namelist, zlist, manual_dist_limit=10000.0)  #z~8
+    hudf_bigbox_wide.export_runparams('tng100_7_6_xyz.txt')
+    hudf_bigbox_wide.export_runparams('tng100_7_6_yxz.txt', swapxy=True)
+    hudf_bigbox_wide.export_runparams('tng100_7_6_zyx.txt', swapxz=True)
 
 
     #hudf_bigbox_vwide = LightCone(75.0/h,cosmology,"Very Wide 75mpc repeated, 136 snaps")
