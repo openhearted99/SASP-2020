@@ -17,9 +17,9 @@ import astropy.units as u
 from astropy.cosmology import WMAP7,z_at_value
 import copy
 
-# Constants 
+# Constants
 ilh = tau.tngh # Little H (H_0/100) is set to 0.704
-illcos = tau.tngcos # Our cosmology is taken from astropy. 
+illcos = tau.tngcos # Our cosmology is taken from astropy.
                     # It uses astropy.cosmology.FlatLambdaCDM(H0=70.4,Om0=0.2726,Ob0=0.0456)
 #======================================================================================================================
 
@@ -31,7 +31,7 @@ illcos = tau.tngcos # Our cosmology is taken from astropy.
 
 
 class lightcone_catalog:
-# This class holds the 
+# This class holds the
 
     def __init__(self,lightconefile,base_dir,mass_limit=(10.0**9.5),sfr_limit=0.0,mag_limit=None):
         lc_data = ascii.read(lightconefile)
@@ -187,7 +187,7 @@ class lightcone_catalog:
             #    snapnum=54
 
             print("    Snapshot Number: ", snapnum)
-            
+
             # Load the data
             fields=['SubhaloMass','SubhaloMassInMaxRad','SubhaloMassInRadType','SubhaloMassInMaxRadType','SubhaloPos','SubhaloSFR','SubhaloSFRinRad','SubhaloVel','SubhaloBHMass','SubhaloBHMdot','SubhaloStellarPhotometrics','SubhaloWindMass']
             subhalos = ilpy.groupcat.loadSubhalos(self.base_dir,snapnum,fields=fields)
@@ -228,15 +228,15 @@ class lightcone_catalog:
             print("    Mstar statistics: ", np.min(mstar_msun[mi]), np.max(mstar_msun[mi]), np.median(mstar_msun[mi]))
             print("    Mgas  statistics: ", np.min(mgas_msun[mi]), np.max(mgas_msun[mi]), np.median(mgas_msun[mi]))
             print("    Mag  statistics : ", np.min(gmag[mi]), np.max(gmag[mi]), np.median(gmag[mi]))
-            
+
             for key in subhalos.keys():
                 if key == 'count':
                     continue
-                
+
                 filtered_data = subhalos[key][mi]
-                
+
                 subhalos[key] = filtered_data
-            
+
             # Now, periodicize
             subhalos = self.periodicize(subhalos,self.L_comovingh*1000.0)
 
@@ -340,7 +340,7 @@ class lightcone_catalog:
 
                 cylinder_obj = cylinder_catalog(snapnum,subhalos,ci,RA_deg,DEC_deg, self.snapshot_redshift[i],
                                                 galaxy_camera_posx,galaxy_camera_posy,galaxy_camera_posz,self.center_redshift[i],
-                                                galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag)
+                                                galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag[mi])
             else:
                 cylinder_obj = None
 
@@ -359,7 +359,7 @@ class lightcone_catalog:
         N = xpos.shape[0]
 
         sid = np.arange(N)
-        
+
         new_subhalos = copy.copy(subhalos)
 
         new_x = copy.copy(xpos)
@@ -374,7 +374,7 @@ class lightcone_catalog:
         new_subhalos['SubFindID'] = np.concatenate((new_subhalos['SubFindID'],sid))
         new_subhalos['SubFindID'] = np.concatenate((new_subhalos['SubFindID'],sid))
 
-        
+
         keys = subhalos.keys()
         for key in keys:
             if key=='SubhaloPos':
