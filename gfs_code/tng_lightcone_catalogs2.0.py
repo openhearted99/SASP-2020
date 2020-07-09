@@ -568,7 +568,7 @@ class cylinder_catalog:
         self.imag = subhalos['SubhaloStellarPhotometrics'][self.subhalo_index,6]
         self.zmag = subhalos['SubhaloStellarPhotometrics'][self.subhalo_index,7]
 
-        self.gmag_apparent=gmag[ci]
+        self.gmag_apparent=gmag
 
         #self.total_redshift =
 
@@ -623,4 +623,4 @@ if __name__=="__main__":
 
     catalog_xyz = process_lightcone_catalog(lightcone="./tng300_6_5_xyz.txt",base_dir='/home/tnguser/sims.TNG/TNG300-1/output/',mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
-    catalog_xyz.output_catalog('./Lightcone_TNG300-1_mag30_6_5_xyz_TEST.txt')
+    catalog_xyz.output_catalog('./Lightcone_TNG300-1_mag30_6_5_xyz.txt')
