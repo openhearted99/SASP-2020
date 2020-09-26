@@ -8,7 +8,7 @@ import illustris_python as ilpy
 import translate_coordinates as tc #renato's code for camera projections
 import tng_api_utils as tau
 
-# Used only sparingly (maybe remove dependencies?)
+# Used only sparingly
 import os
 import astropy.io.ascii as ascii
 import astropy
@@ -17,9 +17,9 @@ import astropy.units as u
 from astropy.cosmology import WMAP7,z_at_value
 import copy
 
-# Constants 
+# Constants
 ilh = tau.tngh # Little H (H_0/100) is set to 0.704
-illcos = tau.tngcos # Our cosmology is taken from astropy. 
+illcos = tau.tngcos # Our cosmology is taken from astropy.
                     # It uses astropy.cosmology.FlatLambdaCDM(H0=70.4,Om0=0.2726,Ob0=0.0456)
 #======================================================================================================================
 
@@ -31,7 +31,7 @@ illcos = tau.tngcos # Our cosmology is taken from astropy.
 
 
 class lightcone_catalog:
-# This class holds the 
+# This class holds the
 
     def __init__(self,lightconefile,base_dir,mass_limit=(10.0**9.5),sfr_limit=0.0,mag_limit=None):
         lc_data = ascii.read(lightconefile)

@@ -8,7 +8,7 @@ import illustris_python as ilpy
 import translate_coordinates as tc #renato's code for camera projections
 import tng_api_utils as tau
 
-# Used only sparingly (maybe remove dependencies?)
+# Used only sparingly
 import os
 import astropy.io.ascii as ascii
 import astropy
@@ -179,7 +179,6 @@ class lightcone_catalog:
             print("Processing Cylinder: ", cyl, i, self.snapshot_redshift[i])
             snapnum = self.snapshot_string[i]
 
-            # Not relevant for us because we're doing tng simulations
             #old corrupt snaps for illustris-1
             #if snapnum==53:
             #    snapnum=52
@@ -239,6 +238,21 @@ class lightcone_catalog:
 
             # Now, periodicize
             subhalos = self.periodicize(subhalos,self.L_comovingh*1000.0)
+            
+             # Clean the loaded subhalo dictionaries
+            mstar_msun = subhalos['SubhaloMassInRadType'][:,4]*(1.0e10)/ilh
+            mgas_msun = subhalos['SubhaloMassInRadType'][:,0]*(1.0e10)/ilh #includes wind mass
+            mbh_msun = subhalos['SubhaloMassInRadType'][:,5]*(1.0e10)/ilh
+
+            baryonmass_msun = mstar_msun + mgas_msun + mbh_msun #within 2x stellar half mass radius... best?
+
+            mhalo_msun = subhalos['SubhaloMass']*(1.0e10)/ilh
+
+            sfr = subhalos['SubhaloSFR']*1.0
+
+            gmag_ABabs=subhalos['SubhaloStellarPhotometrics'][:,4]*1.0
+            distmod=illcos.distmod(cz).value
+            gmag=gmag_ABabs+distmod
 
 
 
@@ -340,7 +354,7 @@ class lightcone_catalog:
 
                 cylinder_obj = cylinder_catalog(snapnum,subhalos,ci,RA_deg,DEC_deg, self.snapshot_redshift[i],
                                                 galaxy_camera_posx,galaxy_camera_posy,galaxy_camera_posz,self.center_redshift[i],
-                                                galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag[mi])
+                                                galaxy_camera_velx,galaxy_camera_vely,galaxy_camera_velz,cyl,gmag)
             else:
                 cylinder_obj = None
 
