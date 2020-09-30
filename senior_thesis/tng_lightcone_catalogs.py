@@ -654,6 +654,6 @@ if __name__=="__main__":
     minz=0.1
     maxz=8.8
 
-    catalog_xyz = process_lightcone_catalog(lightcone="./tng300_6_5_yxz.txt",base_dir='/home/tnguser/sims.TNG/TNG300-1/output/',mag_limit=magl)
+    catalog_xyz = process_lightcone_catalog(lightcone="./tng300_6_5_zyx.txt",base_dir='/home/tnguser/sims.TNG/TNG300-1/output/',mag_limit=magl)
     catalog_xyz = catalog_xyz.process_lightcone(minz=minz,maxz=maxz)
-    catalog_xyz.output_catalog('./Lightcone_TNG300-1_mag30_6_5_yxz_GFS.txt')
+    catalog_xyz.output_catalog('./Lightcone_TNG300-1_mag30_6_5_zyx_GFS.txt')
