@@ -11,7 +11,7 @@ Almost all of this code is his work.
 --CODE--
 Each of the lightcone catalog generation scrips,
 "tng_lightcone_catalogX.0.py" provides diffrent functionality.
-1.0 is the original version of the script, best used on local data.
+1.0 is the original version of the script.
 2.0 is optimized for the Jupyter Lab enviorment, with little functional change from the user perspective.
 3.0 is experimental and non-functioning. If it were reworked, it could be the most resource-effecient implementation of the code,
 but it's outside the current scope.
